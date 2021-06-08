@@ -4,9 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import re
 
+
 def get_details(driver, url,size):
     '''
-
     :param url:link of the shoe format : 'https://stockx.com/air-jordan-1-retro-high-black-white-light-smoke-grey'
     :param size:shoe size: format 'US 10'
     :return: tuple : (prices, style, colorway, retail_price, release_date)
@@ -27,37 +27,63 @@ def get_details(driver, url,size):
     #print(driver.find_element_by_class_name('stats').find_element_by_xpath("//div[1]").text)
 
     ###improve?
-    time.sleep(0.51)
-    #driver.find_element_by_id('menu-button-47').click()
+    time.sleep(1.51)
+    #driver.find_element_by_id('menu-button-35').click()
     #driver.find_elements_by_class_name('chakra-menu__menu-button').click()
     #driver.find_element_by_xpath("//*[@data-testid='product-size-select']").click()
     #driver.find_element_by_class_name('css-amb8c0').click()
     #driver.find_element_by_class_name('select-control').click()
+    #driver.find_element_by_class_name('css-onkibi').click()
+
+    #click the size selection button
     try:
-        driver.find_element_by_xpath('//button[contains(@id,"menu-button")]').click()
-    except Exception:
-        #print("ok")
+        buttons = driver.find_elements_by_xpath('//button[contains(@id,"menu-button")]')
+        for button in buttons:
+            try:
+                button.click()
+            except Exception as e:
+                pass
+                #sometimes there are dumb hidden buttons with the same name
+    except Exception as e:
+        print(e)
         pass
 
+
     #click select size and then clicks the desired size
-    time.sleep(0.5)
+    time.sleep(1.5)
     #x = driver.find_elements_by_xpath("//*[contains(text(), 'us 7')]")
     x = driver.find_elements_by_class_name('css-8atqhb')
 
-
+    #ok checks if the size is found or not
+    ok = False
     for i in x:
         text = i.text
         if size in text:
+            ok = True
             i.click()
 
+    #find both prices
     price_list = driver.find_elements_by_class_name('css-k008qs')
+
+
     prices = []
+    price1 = None
+    price2 = None
     for item in price_list:
-        if '$' in item.text:
-            prices.append(item.text)
+        if item.text != "":
+            if price1 == None:
+                price1 = item.text
+            elif price2 == None:
+                price2 = item.text
 
-    #print(prices)
+    if '$' not in price1:
+        price1 = '0'
+    if '$' not in price2:
+        price2 = '0'
 
+    prices = [price1, price2]
+
+    #finding other details for the shoe: style,colorway,retail_price,release_date
     style = ""
     colorway = ""
     retail_price = ""
@@ -91,9 +117,43 @@ def get_details(driver, url,size):
         pass
     #driver.quit()
     #print(prices)
-    return (prices, style, colorway, retail_price, release_date)
+    return (prices, style, colorway, retail_price, release_date, ok)
+
+def perform_search(driver,url):
+    '''
+    Performs the search and returns the first shoe that is found:
+    can improve the formula
+
+    :param driver: webdriver
+    :param url: generated_url for the search
+    :return: the shoe name
+    '''
+    driver.get(url)
+
+    #accepting all the page shit
+    time.sleep(1)
+    actions = ActionChains(driver)
+    actions.send_keys(Keys.ENTER)
+    actions.perform()
+    try:
+        driver.find_element_by_class_name('css-unzfas-button').click()
+    except Exception:
+        pass
+    element = ""
+    time.sleep(2)#to make sure the search results have time to load, can increase this ammount if the internet connection is slow
+    try:
+        element = driver.find_elements_by_class_name('e1inh05x0')[0]
+        return element.text
+    except Exception:
+        pass
+        #element not found
+        return ""
 
 
-#get_details(url2,'US 8')
+
+###TESTING
+# url2 = 'https://stockx.com/nike-dunk-low-unc-2021-ps'
+# driver = webdriver.Firefox()
+# get_details(driver, url2,'US 12')
 
 

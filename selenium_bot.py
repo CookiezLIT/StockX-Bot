@@ -76,10 +76,11 @@ def get_details(driver, url,size):
             elif price2 == "":
                 price2 = item.text
 
-    if '$' not in price1:
+    if u"\xA3" not in price1:
         price1 = '0'
-    if '$' not in price2:
+    if u"\xA3" not in price2:
         price2 = '0'
+
 
     prices = [price1, price2]
 

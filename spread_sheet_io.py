@@ -1,5 +1,9 @@
+import random
 import time
 from selenium import webdriver
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium_bot import get_details, perform_search
 import gspread
 import pandas as pd
@@ -18,7 +22,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name('google_keys/goog
 client = gspread.authorize(credentials)
 
 target_sheet = client.open("Sneaker Test Sheet").worksheet('Sheet1')
-
+proxy_path = 'proxies.txt'
 ##shoe size charts:
 #the tables are written from the nike shoe conversion site,
 #make changes here if there are problems with size conversions
@@ -226,14 +230,38 @@ def itterate_shoes(data,driver):
                     if ok == True:
                         update_stylesheet(index,url,prices,release_date,colorway,retail_price)
 
+def choose_proxy(proxy_path):
+    '''
+    reads the proxy.txt file and randomly selects a proxy
+    :param proxy_path:path to the proxy file
+    :return: a valid proxy, randomly chosen
+    '''
+    f = open('proxies.txt','r')
+    proxies = f.read()
+    proxies = proxies.split('\n')
+    n = len(proxies)
+    number = random.randint(0,n-1)
+    return proxies[number]
+
+
 def run_all():
     data = read_data()
-    driver = webdriver.Chrome('chromedriver.exe')
+    proxy_ip_port = choose_proxy(proxy_path)
+
+    proxy = Proxy()
+    proxy.proxy_type = ProxyType.MANUAL
+    proxy.http_proxy = proxy_ip_port
+    proxy.sslProxy = proxy_ip_port
+
+    capabilities = webdriver.DesiredCapabilities.CHROME
+    proxy.add_to_capabilities(capabilities)
+
+    driver = webdriver.Chrome('chromedriver.exe',desired_capabilities=capabilities)
     #driver = webdriver.Firefox()
     driver.maximize_window()
     itterate_shoes(data,driver)
     driver.quit()
 
 while True:
-    time.sleep(3600)
     run_all()
+

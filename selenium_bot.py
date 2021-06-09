@@ -67,13 +67,13 @@ def get_details(driver, url,size):
 
 
     prices = []
-    price1 = None
-    price2 = None
+    price1 = ""
+    price2 = ""
     for item in price_list:
         if item.text != "":
-            if price1 == None:
+            if price1 == "":
                 price1 = item.text
-            elif price2 == None:
+            elif price2 == "":
                 price2 = item.text
 
     if '$' not in price1:

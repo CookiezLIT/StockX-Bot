@@ -170,7 +170,7 @@ def update_stylesheet(index, url,prices,release_date,colorway,retail_price):
     target_sheet.update_cell(index + 2, 8, release_date)
     target_sheet.update_cell(index + 2, 9, colorway)
     target_sheet.update_cell(index + 2, 10, retail_price)
-
+    print('GOOGLE SPREAD SHEET UPDATE PERFORMED!')
 
 
 
@@ -264,4 +264,4 @@ def run_all():
 
 while True:
     run_all()
-
+    time.sleep(3600)

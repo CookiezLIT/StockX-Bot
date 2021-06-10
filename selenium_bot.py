@@ -11,7 +11,11 @@ def get_details(driver, url,size):
     :param size:shoe size: format 'US 10'
     :return: tuple : (prices, style, colorway, retail_price, release_date)
     '''
-
+    print('Working on shoe:')
+    print('URL:',url)
+    print('Shoe size:',size)
+    print('---------------------------------------')
+    print('AQUIRED DATA:')
     driver.get(url)
     time.sleep(1)
     actions = ActionChains(driver)
@@ -83,7 +87,8 @@ def get_details(driver, url,size):
 
 
     prices = [price1, price2]
-
+    print('Highest bid:',price1)
+    print('Lowest ask:',price1)
     #finding other details for the shoe: style,colorway,retail_price,release_date
     style = ""
     colorway = ""
@@ -92,6 +97,7 @@ def get_details(driver, url,size):
     try:
         style_element = driver.find_element_by_xpath("//*[@data-testid='product-detail-style']")
         style = style_element.text
+        print('Style:', style)
     except Exception:
         pass
 
@@ -99,25 +105,29 @@ def get_details(driver, url,size):
     try:
         colorway_element = driver.find_element_by_xpath("//*[@data-testid='product-detail-colorway']")
         colorway = colorway_element.text
+        print('Colorway',colorway)
     except Exception:
         pass
 
     try:
         retail_element = driver.find_element_by_xpath("//*[@data-testid='product-detail-retail price']")
         retail_price = retail_element.text
-        #print(retail_price)
+        print('Retail price:',retail_price)
     except Exception:
         pass
 
     try:
         release_element = driver.find_element_by_xpath("//*[@data-testid='product-detail-release date']")
         release_date = release_element.text
-        #print(release_date)
+        print('Release date:',release_date)
 
     except Exception:
         pass
     #driver.quit()
     #print(prices)
+    print('Working on shoe done!')
+    print('---------------------------------------')
+    print('---------------------------------------')
     return (prices, style, colorway, retail_price, release_date, ok)
 
 def perform_search(driver,url):

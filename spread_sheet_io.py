@@ -250,16 +250,21 @@ def choose_proxy(proxy_path):
 def run_all():
     data = read_data()
     proxy_ip_port = choose_proxy(proxy_path)
-    proxy_ip_port = 'http://' + proxy_ip_port
 
-    options = {
-        'proxy': {
-            'http': proxy_ip_port,
-            'https': proxy_ip_port
+    if proxy_ip_port != "":
+
+        proxy_ip_port = 'http://' + proxy_ip_port
+
+        options = {
+            'proxy': {
+                'http': proxy_ip_port,
+                'https': proxy_ip_port
+            }
         }
-    }
 
-    driver = webdriver.Chrome('chromedriver.exe', seleniumwire_options=options)
+        driver = webdriver.Chrome('chromedriver.exe', seleniumwire_options=options)
+    else:
+        driver = webdriver.Chrome('chromedriver.exe')
     driver.maximize_window()
     itterate_shoes(data,driver)
     driver.quit()

@@ -1,6 +1,7 @@
 import random
 import time
-from selenium import webdriver
+#from selenium import webdriver
+from seleniumwire import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.proxy import Proxy, ProxyType
@@ -158,8 +159,8 @@ def calculate_size(size,type):
         print('INVALID SHOE SIZE!')
 
 def update_stylesheet(index, url,prices,release_date,colorway,retail_price):
-    prices[0] = convert_currency(prices[0])
-    prices[1] = convert_currency(prices[1])
+    #prices[0] = convert_currency(prices[0])
+    #prices[1] = convert_currency(prices[1])
     shoe_name = url[19:]
     retail_price = convert_currency(retail_price)
     target_sheet.update_cell(index + 2, 4, prices[0])
@@ -200,21 +201,22 @@ def itterate_shoes(data,driver):
                 else:#we need to calculate the url trough searching on stockx
                     style = row['Style']
                     search_url = 'https://stockx.com/search/sneakers?s=' + str(style)
-                    shoe_name = perform_search(driver,search_url)
-                    if shoe_name == "":
+                    shoe_url = perform_search(driver,search_url)
+
+                    if shoe_url == "":
                         pass
                         print(style,"not found on stockx")
                     else:
-                        url = generate_url(shoe_name)
+
                         type = row['Type']
                         size = calculate_size(row['Size'],type)
 
-                        (prices, style, colorway, retail_price, release_date, ok) = get_details(driver, url, size)
+                        (prices, style, colorway, retail_price, release_date, ok) = get_details(driver, shoe_url, size)
                         if prices == []:  # preventing stockx 404 bug
                             pass
                         else:
                             if ok == True:
-                                update_stylesheet(index,url,prices,release_date,colorway,retail_price)
+                                update_stylesheet(index,shoe_url,prices,release_date,colorway,retail_price)
                                 print(f"{row['Shoe Name']} :updated URL and done!")
 
             else:
@@ -244,20 +246,20 @@ def choose_proxy(proxy_path):
     return proxies[number]
 
 
+
 def run_all():
     data = read_data()
     proxy_ip_port = choose_proxy(proxy_path)
+    proxy_ip_port = 'http://' + proxy_ip_port
 
-    proxy = Proxy()
-    proxy.proxy_type = ProxyType.MANUAL
-    proxy.http_proxy = proxy_ip_port
-    proxy.sslProxy = proxy_ip_port
+    options = {
+        'proxy': {
+            'http': proxy_ip_port,
+            'https': proxy_ip_port
+        }
+    }
 
-    capabilities = webdriver.DesiredCapabilities.CHROME
-    proxy.add_to_capabilities(capabilities)
-
-    driver = webdriver.Chrome('chromedriver.exe',desired_capabilities=capabilities)
-    #driver = webdriver.Firefox()
+    driver = webdriver.Chrome('chromedriver.exe', seleniumwire_options=options)
     driver.maximize_window()
     itterate_shoes(data,driver)
     driver.quit()

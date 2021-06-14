@@ -65,6 +65,8 @@ def get_details(driver, url,size):
         if size in text:
             ok = True
             i.click()
+            print('bine')
+            break
 
     #find both prices
     price_list = driver.find_elements_by_class_name('css-k008qs')
@@ -80,15 +82,17 @@ def get_details(driver, url,size):
             elif price2 == "":
                 price2 = item.text
 
-    if u"\xA3" not in price1:
+    #if u"\xA3" not in price1:
+    if '€' not in price1:
         price1 = '0'
-    if u"\xA3" not in price2:
+    #if u"\xA3" not in price2:
+    if '€' not in price2:
         price2 = '0'
 
 
     prices = [price1, price2]
     print('Highest bid:',price1)
-    print('Lowest ask:',price1)
+    print('Lowest ask:',price2)
     #finding other details for the shoe: style,colorway,retail_price,release_date
     style = ""
     colorway = ""
@@ -137,7 +141,7 @@ def perform_search(driver,url):
 
     :param driver: webdriver
     :param url: generated_url for the search
-    :return: the shoe name
+    :return: the shoe url
     '''
     driver.get(url)
 
@@ -153,8 +157,14 @@ def perform_search(driver,url):
     element = ""
     time.sleep(2)#to make sure the search results have time to load, can increase this ammount if the internet connection is slow
     try:
-        element = driver.find_elements_by_class_name('e1inh05x0')[0]
-        return element.text
+        # element = driver.find_elements_by_class_name('e1inh05x0')[0]
+        # return element.text
+        search_item = driver.find_elements_by_class_name('e1yt6rrx0')[0]
+        url_link = search_item.find_element_by_tag_name("a")
+        print('Searched for a shoe, found this url:')
+        print(url_link.get_attribute('href'))
+
+        return url_link.get_attribute('href')
     except Exception:
         pass
         #element not found

@@ -82,11 +82,12 @@ def get_details(driver, url,size):
             elif price2 == "":
                 price2 = item.text
 
-    #if u"\xA3" not in price1:
-    if '€' not in price1:
+
+    if u"\xA3" not in price1:
+    #if '€' not in price1:
         price1 = '0'
-    #if u"\xA3" not in price2:
-    if '€' not in price2:
+    if u"\xA3" not in price2:
+    #if '€' not in price2:
         price2 = '0'
 
 

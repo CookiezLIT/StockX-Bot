@@ -243,8 +243,18 @@ def choose_proxy(proxy_path):
     proxies = proxies.split('\n')
     n = len(proxies)
     number = random.randint(0,n-1)
-    return proxies[number]
 
+    proxy = proxies[number]
+    if proxy == "":
+        return ""
+    details = proxy.split(':')
+    ip = details[0]
+    port = details[1]
+    username = details[2]
+    password = details[3]
+
+    final_proxy = 'http://' + username + ':' + password + '@' + ip + ':' + port
+    return final_proxy
 
 
 def run_all():
@@ -252,8 +262,6 @@ def run_all():
     proxy_ip_port = choose_proxy(proxy_path)
 
     if proxy_ip_port != "":
-
-        proxy_ip_port = 'http://' + proxy_ip_port
 
         options = {
             'proxy': {

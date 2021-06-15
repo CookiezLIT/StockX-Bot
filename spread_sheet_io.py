@@ -139,15 +139,16 @@ def run_all():
     proxy_ip_port = choose_proxy(proxy_path)
 
     if proxy_ip_port != "":
-
         options = {
             'proxy': {
                 'http': proxy_ip_port,
                 'https': proxy_ip_port
             }
         }
-
-        driver = webdriver.Chrome('chromedriver.exe', seleniumwire_options=options)
+        chrome_options  = webdriver.ChromeOptions()
+        prefs = {"profile.managed_default_content_settings.images": 2}
+        chrome_options.add_experimental_option("prefs", prefs)
+        driver = webdriver.Chrome('chromedriver.exe', seleniumwire_options=options,chrome_options=chrome_options)
     else:
         driver = webdriver.Chrome('chromedriver.exe')
     driver.maximize_window()
